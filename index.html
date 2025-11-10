@@ -2,66 +2,118 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>тут ничего нет</title>
+  <title>Контент испарился</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    html, body {
-      height: 100%;
+    :root {
+      --bg: radial-gradient(circle at 50% 20%, #1f2937 0%, #0f172a 50%, #020617 100%);
+      --text: #e2e8f0;
+      --muted: rgba(226, 232, 240, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
       margin: 0;
-      font-family: "Inter", system-ui, sans-serif;
-      background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 60%, #020617 100%);
+      min-height: 100vh;
+      background: var(--bg);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #e2e8f0;
+      text-align: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif;
+      color: var(--text);
+      padding: 1.5rem;
+      position: relative;
       overflow: hidden;
     }
 
     .glow {
       position: absolute;
-      border-radius: 50%;
+      border-radius: 999px;
       filter: blur(120px);
       opacity: 0.35;
       mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .glow.a {
+      width: 420px;
+      height: 420px;
+      top: -140px;
+      left: -120px;
+      background: #38bdf8;
       animation: float 12s ease-in-out infinite alternate;
     }
 
-    .glow1 {
-      width: 480px;
-      height: 480px;
-      background: #38bdf8;
-      top: -150px;
-      left: -150px;
-    }
-
-    .glow2 {
-      width: 420px;
-      height: 420px;
+    .glow.b {
+      width: 360px;
+      height: 360px;
+      bottom: -140px;
+      right: -120px;
       background: #a855f7;
-      bottom: -150px;
-      right: -150px;
-      animation-delay: 3s;
+      animation: float 14s ease-in-out infinite alternate-reverse;
     }
 
     @keyframes float {
       from { transform: translateY(0) scale(1); }
-      to { transform: translateY(-40px) scale(1.1); }
+      to { transform: translateY(-28px) scale(1.06); }
+    }
+
+    .content {
+      max-width: 540px;
+      z-index: 1;
     }
 
     h1 {
-      font-size: clamp(1.2rem, 3vw, 2rem);
-      font-weight: 500;
+      font-size: clamp(1.5rem, 4vw, 2.35rem);
+      font-weight: 600;
       letter-spacing: -0.015em;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 28px rgba(15, 23, 42, 0.35);
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0.65rem;
+      left: 0;
+      width: 100%;
       text-align: center;
+      font-size: 0.55rem;
+      color: rgba(226, 232, 240, 0.35);
+      letter-spacing: 0.04em;
       z-index: 1;
-      opacity: 0.9;
-      text-shadow: 0 0 20px rgba(56,189,248,0.25);
+      pointer-events: none;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1.2rem;
+      }
+      h1 {
+        font-size: 1.55rem;
+      }
+      .footer {
+        font-size: 0.52rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="glow glow1"></div>
-  <div class="glow glow2"></div>
-  <h1>Контент испарился. Следов не обнаружено.</h1>
+  <div class="glow a"></div>
+  <div class="glow b"></div>
+  <div class="content">
+    <h1>Контент испарился. Следов не обнаружено.</h1>
+  </div>
+  <div class="footer">myr2021 все видит</div>
 </body>
 </html>
