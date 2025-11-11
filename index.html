@@ -1,119 +1,333 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Контент испарился</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Morning</title>
   <style>
-    :root {
-      --bg: radial-gradient(circle at 50% 20%, #1f2937 0%, #0f172a 50%, #020617 100%);
-      --text: #e2e8f0;
-      --muted: rgba(226, 232, 240, 0.6);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
+      background: #d1dbe6;
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
+    }
+    .tg-wrapper {
+      width: 380px;
+      height: 620px;
+      background: #e5ebf1;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+    .tg-header {
+      background: #6ca7ff;
+      color: #fff;
+      padding: 14px 16px 10px;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif;
-      color: var(--text);
-      padding: 1.5rem;
+      gap: 10px;
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      background: #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #6ca7ff;
+      font-weight: 600;
+    }
+    .tg-header .name { font-weight: 600; }
+    .tg-header .status { font-size: 12px; opacity: .8; }
+
+    .tg-chat {
+      flex: 1;
+      background: url("https://telegram.org/img/tl_background_squares.png") repeat;
+      background-color: #d9e2eb;
+      padding: 10px 12px 70px; 
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       position: relative;
       overflow: hidden;
     }
 
-    .glow {
-      position: absolute;
-      border-radius: 999px;
-      filter: blur(120px);
-      opacity: 0.35;
-      mix-blend-mode: screen;
-      pointer-events: none;
+
+    .typing {
+      background: #fff;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 16px 16px 16px 0;
+      font-size: 13px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      align-self: flex-start;
+      display: none;
+    }
+    .dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #6ca7ff;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+    .dots span:nth-child(2){animation-delay:.2s;}
+    .dots span:nth-child(3){animation-delay:.4s;}
+    @keyframes blink {0%,100%{opacity:.3;}50%{opacity:1;}}
+
+
+    .msg {
+      background: #fff;
+      max-width: 80%;
+      padding: 10px 14px 14px;
+      border-radius: 16px 16px 16px 0;
+      font-size: 14px;
+      line-height: 1.45;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      display: none;
+      align-self: flex-start;
+    }
+    .time {
+      font-size: 11px;
+      color: #9aa5b0;
+      text-align: right;
+      margin-top: 4px;
     }
 
-    .glow.a {
-      width: 420px;
-      height: 420px;
-      top: -140px;
-      left: -120px;
-      background: #38bdf8;
-      animation: float 12s ease-in-out infinite alternate;
+
+    .sticker {
+      display: none;
+      align-self: flex-start;
+      margin-top: 4px;
+      max-width: 160px;
+      border-radius: 16px;
     }
 
-    .glow.b {
-      width: 360px;
-      height: 360px;
-      bottom: -140px;
-      right: -120px;
-      background: #a855f7;
-      animation: float 14s ease-in-out infinite alternate-reverse;
-    }
 
-    @keyframes float {
-      from { transform: translateY(0) scale(1); }
-      to { transform: translateY(-28px) scale(1.06); }
-    }
-
-    .content {
-      max-width: 540px;
-      z-index: 1;
-    }
-
-    h1 {
-      font-size: clamp(1.5rem, 4vw, 2.35rem);
+    .love-btn {
+      display: none;
+      align-self: flex-start;
+      margin-top: 6px;
+      background: #ff5b5b;
+      border: none;
+      color: #fff;
       font-weight: 600;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 28px rgba(15, 23, 42, 0.35);
+      padding: 6px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(255,91,91,.4);
     }
+    .love-btn:active { transform: translateY(1px); }
 
-    p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .footer {
-      position: fixed;
-      bottom: 0.65rem;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 0.55rem;
-      color: rgba(226, 232, 240, 0.35);
-      letter-spacing: 0.04em;
-      z-index: 1;
+    .hearts-container {
+      position: absolute;
+      inset: 0;
       pointer-events: none;
+      overflow: hidden;
+    }
+    .heart-fly {
+      position: absolute;
+      bottom: 70px; 
+      font-size: 34px;
+      color: #ff3b3b;
+      text-shadow: 0 3px 10px rgba(255,0,0,.35);
+      animation: heartUp 2.4s ease-out forwards, heartPulse 1s ease-in-out infinite;
     }
 
-    @media (max-width: 480px) {
-      body {
-        padding: 1.2rem;
-      }
-      h1 {
-        font-size: 1.55rem;
-      }
-      .footer {
-        font-size: 0.52rem;
-      }
+    @keyframes heartUp {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      60%  { opacity: 1; }
+      100% { transform: translate(var(--dx, 0px), -190px) scale(1.25); opacity: 0; }
+    }
+
+    @keyframes heartPulse {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%     { transform: translate(0,0) scale(1.12); }
+    }
+
+
+    .heart {
+      display:inline-block;
+      color:#ff3b3b;
+      font-size:16px;
+      animation: heartPulse 1s infinite;
+      transform-origin: center;
+    }
+
+
+    .keyboard {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #f7f7f7;
+      border-top: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      height: 52px;
+      gap: 8px;
+    }
+    .keyboard .icon { font-size: 20px; color: #999; }
+    .input {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .mic { font-size: 20px; color: #6ca7ff; }
+
+    @media (max-width: 420px) {
+      .tg-wrapper { width: 100%; height: 100vh; border-radius: 0; }
+      .tg-chat { padding-bottom: 70px; }
+      .sticker { max-width: 180px; }
     }
   </style>
 </head>
 <body>
-  <div class="glow a"></div>
-  <div class="glow b"></div>
-  <div class="content">
-    <h1>Контент испарился. Следов не обнаружено.</h1>
+  <div class="tg-wrapper">
+    <div class="tg-header">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Александр</div>
+        <div class="status">online</div>
+      </div>
+    </div>
+
+    <div class="tg-chat" id="chat">
+
+      <div class="typing" id="typing1">
+        Александр печатает…
+        <span class="dots"><span></span><span></span><span></span></span>
+      </div>
+
+
+      <div class="msg" id="msg"></div>
+
+
+      <div class="typing" id="typing2">
+        Александр выбирает стикер…
+        <span class="dots"><span></span><span></span><span></span></span>
+      </div>
+
+
+      <img src="https://media1.tenor.com/m/x-DRJpB_qeQAAAAd/mochi-cat.gif"
+           alt="sticker" class="sticker" id="sticker">
+
+
+      <button class="love-btn" id="loveBtn">КЛИК</button>
+
+
+      <div class="hearts-container" id="hearts"></div>
+    </div>
+
+
+    <div class="keyboard">
+      <div class="icon">📎</div>
+      <div class="input">Сообщение...</div>
+      <div class="icon">😊</div>
+      <div class="mic">🎤</div>
+    </div>
   </div>
-  <div class="footer">myr2021 все видит</div>
+
+  <script>
+
+    const finalText =
+      "Доброе утро, Котенок 💞 Я бы хотел, первым видить твою улыбку после сна. Но пока это делает экран телефона ☀️";
+
+    const typing1 = document.getElementById("typing1");
+    const typing2 = document.getElementById("typing2");
+    const msgEl = document.getElementById("msg");
+    const sticker = document.getElementById("sticker");
+    const loveBtn = document.getElementById("loveBtn");
+    const heartsContainer = document.getElementById("hearts");
+
+
+    typing1.style.display = "inline-flex";
+    setTimeout(() => {
+      typing1.style.display = "none";
+      showMessage();
+    }, 3000);
+
+
+    let i = 0;
+    const TYPE_SPEED = 60; 
+    function showMessage() {
+      msgEl.style.display = "block";
+      msgEl.innerHTML = "";
+      typeChar();
+    }
+
+    function typeChar() {
+      const full = finalText;
+      if (i < full.length) {
+        if (full.slice(i, i+4) === "<br>") {
+          msgEl.innerHTML += "<br>";
+          i += 4;
+        } else {
+          msgEl.innerHTML += full[i];
+          i++;
+        }
+        setTimeout(typeChar, TYPE_SPEED);
+      } else {
+        const t = document.createElement("div");
+        t.className = "time";
+        const now = new Date();
+        t.textContent =
+          now.getHours().toString().padStart(2, "0") +
+          ":" +
+          now.getMinutes().toString().padStart(2, "0");
+        msgEl.appendChild(t);
+
+
+        typing2.style.display = "inline-flex";
+        setTimeout(() => {
+          typing2.style.display = "none";
+          sticker.style.display = "block";
+          setTimeout(() => {
+            loveBtn.style.display = "inline-block";
+          }, 400);
+        }, 2000);
+      }
+    }
+
+    let lastSpawn = 0;
+    const lanes = [40, 80, 120, 160, 200, 240, 280]; 
+    let laneIndex = 0;
+
+    function spawnHearts() {
+      const now = Date.now();
+      if (now - lastSpawn < 350) return;
+      lastSpawn = now;
+
+      for (let k = 0; k < 5; k++) {
+        const h = document.createElement("div");
+        h.className = "heart-fly";
+        const x = lanes[(laneIndex + k) % lanes.length];
+        h.style.left = x + "px";
+        const dx = (Math.random() * 40 - 20).toFixed(0); 
+        h.style.setProperty("--dx", dx + "px");
+        h.style.animationDelay = (k * 0.08) + "s";
+
+        h.textContent = "❤";
+        heartsContainer.appendChild(h);
+        setTimeout(() => h.remove(), 2500);
+      }
+      laneIndex = (laneIndex + 5) % lanes.length;
+    }
+
+    loveBtn.addEventListener("click", spawnHearts);
+  </script>
 </body>
 </html>
