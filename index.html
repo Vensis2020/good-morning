@@ -1,352 +1,128 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Контент испарился</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Утро доброе 💖</title>
   <style>
-    :root {
-      --bg: radial-gradient(circle at 50% 20%, #1f2937 0%, #0f172a 50%, #020617 100%);
-      --text: #e2e8f0;
-      --muted: rgba(226, 232, 240, 0.6);
-    }
-
-    * {
-      box-sizing: border-box;
+    /* Подключение локального шрифта Fet */
+    @font-face {
+      font-family: 'Fet';
+      src: url('fonts/Fet.woff2') format('woff2'),
+           url('fonts/Fet.woff') format('woff'),
+           url('fonts/Fet.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
     }
 
     body {
-
-
-
-
-
-
       margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-
-
-
-
-
-
-
+      height: 100vh;
+      background: linear-gradient(180deg, #ffdde1, #ee9ca7);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease-in-out infinite;
       display: flex;
-      flex-direction: column;
-
-
-
-
-
-
-
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Fet', cursive;
+      color: #5a4033;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      width: 90%;
+      max-width: 400px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px 30px;
       text-align: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif;
-      color: var(--text);
-      padding: 1.5rem;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       position: relative;
       overflow: hidden;
     }
 
-    .glow {
+    .card::before {
+      content: '';
       position: absolute;
-      border-radius: 999px;
-      filter: blur(120px);
-      opacity: 0.35;
-      mix-blend-mode: screen;
-      pointer-events: none;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%);
+      top: -50%;
+      left: -50%;
+      animation: lightMove 6s infinite linear;
+      z-index: 0;
     }
 
-    .glow.a {
-      width: 420px;
-      height: 420px;
-      top: -140px;
-      left: -120px;
-      background: #38bdf8;
-      animation: float 12s ease-in-out infinite alternate;
-    }
-
-    .glow.b {
-      width: 360px;
-      height: 360px;
-      bottom: -140px;
-      right: -120px;
-      background: #a855f7;
-      animation: float 14s ease-in-out infinite alternate-reverse;
-
-
-
-
-
-
-    }
-
-
-    @keyframes float {
-      from { transform: translateY(0) scale(1); }
-      to { transform: translateY(-28px) scale(1.06); }
-
-
-
-
-
-
-
-
-
-
+    @keyframes lightMove {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .content {
-      max-width: 540px;
+      position: relative;
       z-index: 1;
-
     }
 
-    h1 {
-      font-size: clamp(1.5rem, 4vw, 2.35rem);
-      font-weight: 600;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 0 28px rgba(15, 23, 42, 0.35);
+    .greeting {
+      font-size: 34px;
+      color: #e76f51;
+      margin-bottom: 14px;
     }
 
-    p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.8rem;
-
-
-
+    .message {
+      font-size: 26px;
+      color: #5a4033;
+      line-height: 1.6;
+      margin-top: 10px;
+      animation: fadeIn 1.2s ease-in-out forwards;
+      opacity: 0;
     }
 
-    .footer {
-      position: fixed;
-      bottom: 0.65rem;
-
-      left: 0;
-      width: 100%;
-      text-align: center;
-      font-size: 0.55rem;
-      color: rgba(226, 232, 240, 0.35);
-      letter-spacing: 0.04em;
-      z-index: 1;
-      pointer-events: none;
-
+    .message.visible {
+      opacity: 1;
     }
 
+    .signature {
+      margin-top: 25px;
+      color: #c67b5c;
+      font-size: 24px;
+      text-align: right;
+    }
 
-
-
-
-
-
-
-
-
-
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
     @media (max-width: 480px) {
-      body {
-        padding: 1.2rem;
+      .card {
+        padding: 28px 20px;
       }
-      h1 {
-        font-size: 1.55rem;
-      }
-      .footer {
-        font-size: 0.52rem;
-      }
+      .greeting { font-size: 28px; }
+      .message { font-size: 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="glow a"></div>
-  <div class="glow b"></div>
-  <div class="content">
-    <h1>Контент испарился. Следов не обнаружено.</h1>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <div class="card">
+    <div class="content">
+      <div class="greeting">Доброе утро, Алина 🌸</div>
+      <div class="message" id="message">Пусть утро будет мягким, день — тёплым, а мысли — светлыми. Пусть каждый момент напоминает, как ты дорога 💖</div>
+      <div class="signature">— Саша</div>
+    </div>
   </div>
-  <div class="footer">myr2021 все видит</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  <script>
+    const message = document.getElementById('message');
+    window.addEventListener('load', () => {
+      setTimeout(() => message.classList.add('visible'), 600);
+    });
+  </script>
 </body>
 </html>
