@@ -3,126 +3,331 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Утро доброе 💖</title>
+  <title>Доброе утро</title>
   <style>
-    /* Подключение локального шрифта Fet */
-    @font-face {
-      font-family: 'Fet';
-      src: url('Fet.woff2') format('woff2'),
-           url('Fet.woff') format('woff'),
-           url('Fet.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
     body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(180deg, #ffdde1, #ee9ca7);
-      background-size: 400% 400%;
-      animation: bgMove 12s ease-in-out infinite;
+      background: #d1dbe6;
+      font-family: "Segoe UI", sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      font-family: 'Fet', cursive;
-      color: #5a4033;
+      height: 100vh;
+      margin: 0;
     }
-
-    @keyframes bgMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .card {
-      width: 90%;
-      max-width: 400px;
-      background: #fff;
+    .tg-wrapper {
+      width: 380px;
+      height: 620px;
+      background: #e5ebf1;
       border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      padding: 40px 30px;
-      text-align: center;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .tg-header {
+      background: #6ca7ff;
+      color: #fff;
+      padding: 14px 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      background: #fff;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #6ca7ff;
+      font-weight: 600;
+    }
+    .tg-header .name { font-weight: 600; }
+    .tg-header .status { font-size: 12px; opacity: .8; }
+
+    .tg-chat {
+      flex: 1;
+      background: url("https://telegram.org/img/tl_background_squares.png") repeat;
+      background-color: #d9e2eb;
+      padding: 10px 12px 70px; 
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       position: relative;
       overflow: hidden;
     }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%);
-      top: -50%;
-      left: -50%;
-      animation: lightMove 6s infinite linear;
-      z-index: 0;
-    }
 
-    @keyframes lightMove {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .typing {
+      background: #fff;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 16px 16px 16px 0;
+      font-size: 13px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      align-self: flex-start;
+      display: none;
     }
-
-    .content {
-      position: relative;
-      z-index: 1;
+    .dots span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #6ca7ff;
+      border-radius: 50%;
+      animation: blink 1s infinite;
     }
+    .dots span:nth-child(2){animation-delay:.2s;}
+    .dots span:nth-child(3){animation-delay:.4s;}
+    @keyframes blink {0%,100%{opacity:.3;}50%{opacity:1;}}
 
-    .greeting {
-      font-size: 34px;
-      color: #e76f51;
-      margin-bottom: 14px;
+
+    .msg {
+      background: #fff;
+      max-width: 80%;
+      padding: 10px 14px 14px;
+      border-radius: 16px 16px 16px 0;
+      font-size: 14px;
+      line-height: 1.45;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      display: none;
+      align-self: flex-start;
     }
-
-    .message {
-      font-size: 26px;
-      color: #5a4033;
-      line-height: 1.6;
-      margin-top: 10px;
-      animation: fadeIn 1.2s ease-in-out forwards;
-      opacity: 0;
-    }
-
-    .message.visible {
-      opacity: 1;
-    }
-
-    .signature {
-      margin-top: 25px;
-      color: #c67b5c;
-      font-size: 24px;
+    .time {
+      font-size: 11px;
+      color: #9aa5b0;
       text-align: right;
+      margin-top: 4px;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
+
+    .sticker {
+      display: none;
+      align-self: flex-start;
+      margin-top: 4px;
+      max-width: 160px;
+      border-radius: 16px;
     }
 
-    @media (max-width: 480px) {
-      .card {
-        padding: 28px 20px;
-      }
-      .greeting { font-size: 28px; }
-      .message { font-size: 22px; }
+
+    .love-btn {
+      display: none;
+      align-self: flex-start;
+      margin-top: 6px;
+      background: #ff5b5b;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(255,91,91,.4);
+    }
+    .love-btn:active { transform: translateY(1px); }
+
+    .hearts-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .heart-fly {
+      position: absolute;
+      bottom: 70px; 
+      font-size: 34px;
+      color: #ff3b3b;
+      text-shadow: 0 3px 10px rgba(255,0,0,.35);
+      animation: heartUp 2.4s ease-out forwards, heartPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes heartUp {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      60%  { opacity: 1; }
+      100% { transform: translate(var(--dx, 0px), -190px) scale(1.25); opacity: 0; }
+    }
+
+    @keyframes heartPulse {
+      0%,100% { transform: translate(0,0) scale(1); }
+      50%     { transform: translate(0,0) scale(1.12); }
+    }
+
+
+    .heart {
+      display:inline-block;
+      color:#ff3b3b;
+      font-size:16px;
+      animation: heartPulse 1s infinite;
+      transform-origin: center;
+    }
+
+
+    .keyboard {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #f7f7f7;
+      border-top: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      height: 52px;
+      gap: 8px;
+    }
+    .keyboard .icon { font-size: 20px; color: #999; }
+    .input {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .mic { font-size: 20px; color: #6ca7ff; }
+
+    @media (max-width: 420px) {
+      .tg-wrapper { width: 100%; height: 100vh; border-radius: 0; }
+      .tg-chat { padding-bottom: 70px; }
+      .sticker { max-width: 180px; }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="content">
-      <div class="greeting">Доброе утро, Алина 🌸</div>
-      <div class="message" id="message">Пусть утро будет мягким, день — тёплым, а мысли — светлыми. Пусть каждый момент напоминает, как ты дорога 💖</div>
-      <div class="signature">— Саша</div>
+  <div class="tg-wrapper">
+    <div class="tg-header">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Александр</div>
+        <div class="status">online</div>
+      </div>
+    </div>
+
+    <div class="tg-chat" id="chat">
+
+      <div class="typing" id="typing1">
+        Александр печатает…
+        <span class="dots"><span></span><span></span><span></span></span>
+      </div>
+
+
+      <div class="msg" id="msg"></div>
+
+
+      <div class="typing" id="typing2">
+        Александр выбирает стикер…
+        <span class="dots"><span></span><span></span><span></span></span>
+      </div>
+
+
+      <img src="https://media1.tenor.com/m/x-DRJpB_qeQAAAAd/mochi-cat.gif"
+           alt="sticker" class="sticker" id="sticker">
+
+
+      <button class="love-btn" id="loveBtn">КЛИК</button>
+
+
+      <div class="hearts-container" id="hearts"></div>
+    </div>
+
+
+    <div class="keyboard">
+      <div class="icon">📎</div>
+      <div class="input">Сообщение...</div>
+      <div class="icon">😊</div>
+      <div class="mic">🎤</div>
     </div>
   </div>
 
   <script>
-    const message = document.getElementById('message');
-    window.addEventListener('load', () => {
-      setTimeout(() => message.classList.add('visible'), 600);
-    });
+
+    const finalText =
+      "Доброе утро, Котенок 💞 Я бы хотел, первым видить твою улыбку после сна. Но пока это делает экран телефона ☀️";
+
+    const typing1 = document.getElementById("typing1");
+    const typing2 = document.getElementById("typing2");
+    const msgEl = document.getElementById("msg");
+    const sticker = document.getElementById("sticker");
+    const loveBtn = document.getElementById("loveBtn");
+    const heartsContainer = document.getElementById("hearts");
+
+
+    typing1.style.display = "inline-flex";
+    setTimeout(() => {
+      typing1.style.display = "none";
+      showMessage();
+    }, 3000);
+
+
+    let i = 0;
+    const TYPE_SPEED = 60; 
+    function showMessage() {
+      msgEl.style.display = "block";
+      msgEl.innerHTML = "";
+      typeChar();
+    }
+
+    function typeChar() {
+      const full = finalText;
+      if (i < full.length) {
+        if (full.slice(i, i+4) === "<br>") {
+          msgEl.innerHTML += "<br>";
+          i += 4;
+        } else {
+          msgEl.innerHTML += full[i];
+          i++;
+        }
+        setTimeout(typeChar, TYPE_SPEED);
+      } else {
+        const t = document.createElement("div");
+        t.className = "time";
+        const now = new Date();
+        t.textContent =
+          now.getHours().toString().padStart(2, "0") +
+          ":" +
+          now.getMinutes().toString().padStart(2, "0");
+        msgEl.appendChild(t);
+
+
+        typing2.style.display = "inline-flex";
+        setTimeout(() => {
+          typing2.style.display = "none";
+          sticker.style.display = "block";
+          setTimeout(() => {
+            loveBtn.style.display = "inline-block";
+          }, 400);
+        }, 2000);
+      }
+    }
+
+    let lastSpawn = 0;
+    const lanes = [40, 80, 120, 160, 200, 240, 280]; 
+    let laneIndex = 0;
+
+    function spawnHearts() {
+      const now = Date.now();
+      if (now - lastSpawn < 350) return;
+      lastSpawn = now;
+
+      for (let k = 0; k < 5; k++) {
+        const h = document.createElement("div");
+        h.className = "heart-fly";
+        const x = lanes[(laneIndex + k) % lanes.length];
+        h.style.left = x + "px";
+        const dx = (Math.random() * 40 - 20).toFixed(0); 
+        h.style.setProperty("--dx", dx + "px");
+        h.style.animationDelay = (k * 0.08) + "s";
+
+        h.textContent = "❤";
+        heartsContainer.appendChild(h);
+        setTimeout(() => h.remove(), 2500);
+      }
+      laneIndex = (laneIndex + 5) % lanes.length;
+    }
+
+    loveBtn.addEventListener("click", spawnHearts);
   </script>
 </body>
 </html>
