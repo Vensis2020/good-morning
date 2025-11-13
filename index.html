@@ -1,128 +1,297 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Утро доброе 💖</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Доброе утро, Котя</title>
   <style>
-    /* Подключение локального шрифта Fet */
-    @font-face {
-      font-family: 'Fet';
-      src: url('Fet.woff2') format('woff2'),
-           url('Fet.woff') format('woff'),
-           url('Fet.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
+    :root{
+      --card-w: 420px;
+      --ratio: 9/16;
+      --radius: 28px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --glass: rgba(0,0,0,.30);
+      --text: #fff;
+      --muted: rgba(255,255,255,.88);
+      --progress-bg: rgba(255,255,255,.35);
+      --progress-fg: #fff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0; display:grid; place-items:center; min-height:100vh;
+      background:#0a0a0a; color:var(--text); font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    }
+    .frame{
+      position:relative; width:min(100%, var(--card-w)); aspect-ratio:var(--ratio);
+      border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
+      outline:1px solid rgba(255,255,255,.08);
+      opacity:0; pointer-events:none; transform:translateY(10px);
+      transition:opacity .4s ease, transform .4s ease;
+    }
+    .frame.is-live{
+      opacity:1; pointer-events:auto; transform:none;
+    }
+    .layer{position:absolute; inset:0}
+    .veil{background:rgba(0,0,0,.22)}
+    .noise{opacity:.18; pointer-events:none; background-image:radial-gradient(#fff 1px, transparent 1px); background-size:16px 16px}
+
+    .grad-intro{background-image:linear-gradient(135deg,#ec4899,#a21caf,#4f46e5)}
+    .grad-movie{background-image:linear-gradient(135deg,#4f46e5,#0ea5e9,#06b6d4)}
+    .grad-third{background-image:linear-gradient(135deg,#f43f5e,#f59e0b,#fbbf24)}
+    .grad-vibe{background-image:linear-gradient(135deg,#10b981,#14b8a6,#38bdf8)}
+    .grad-today{background-image:linear-gradient(135deg,#7c3aed,#db2777,#ec4899)}
+    .grad-gm{background-image:linear-gradient(135deg,#f59e0b,#facc15,#fb7185)}
+
+    .progress{position:absolute; left:12px; right:12px; top:10px; display:flex; gap:6px; z-index:30}
+    .bar{height:4px; flex:1; background:var(--progress-bg); border-radius:999px; overflow:hidden}
+    .fill{height:100%; width:0%; background:var(--progress-fg)}
+
+    .ctrls{position:absolute; right:10px; top:8px; display:flex; gap:8px; z-index:30}
+    .btn{appearance:none; border:0; border-radius:999px; background:var(--glass); color:#fff; width:36px; height:36px; display:grid; place-items:center; cursor:pointer}
+    .btn:hover{background:rgba(0,0,0,.4)}
+    .navL,.navR{position:absolute; inset-block:0; border:0; background:transparent; cursor:pointer; z-index:20}
+    .navL{left:0; width:33%}
+    .navR{right:0; width:67%}
+
+    .content{position:absolute; inset:0; padding:24px; display:flex; flex-direction:column; z-index:10}
+    .kicker{font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.85}
+    h1{margin:.4rem 0 0; font-size:28px; line-height:1.1; text-shadow:0 1px 0 rgba(0,0,0,.2)}
+    p.body{margin-top:12px; font-size:18px; color:var(--muted); white-space:pre-line; flex:1; overflow:auto}
+    .final{margin-top:auto; padding-bottom:86px}
+    .cta{width:100%; border:0; border-radius:20px; font-weight:700; padding:16px 20px; background:#fff; color:#000; box-shadow:0 12px 30px rgba(0,0,0,.35); cursor:pointer}
+    .sub{margin-top:10px; text-align:center; font-size:14px; opacity:.9}
+
+    .bottom-glow{
+      position:absolute; inset-inline:0; bottom:0; height:160px;
+      background:linear-gradient(180deg, rgba(10,10,10,0), rgba(3,3,3,.88));
+      pointer-events:none; z-index:5;
+    }
+    .mobile-nav{
+      position:absolute; inset-inline:24px; bottom:32px;
+      display:none; gap:12px; z-index:25;
+    }
+    .mobile-btn{
+      flex:1; border:0; border-radius:18px; padding:14px;
+      font-size:15px; font-weight:600; letter-spacing:.05em;
+      background:rgba(0,0,0,.55); color:#fff; text-transform:uppercase;
+      backdrop-filter:blur(12px); box-shadow:0 10px 30px rgba(0,0,0,.4);
+      cursor:pointer;
+    }
+    .mobile-btn:disabled,
+    .desk-btn:disabled{
+      opacity:.45; cursor:not-allowed;
     }
 
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(180deg, #ffdde1, #ee9ca7);
-      background-size: 400% 400%;
-      animation: bgMove 12s ease-in-out infinite;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      font-family: 'Fet', cursive;
-      color: #5a4033;
+    .loader-overlay{
+      position:fixed; inset:0; background:radial-gradient(circle at top,#1f2937,#0b0b0b);
+      display:grid; place-items:center; transition:opacity .4s ease; z-index:100;
+    }
+    .loader-overlay.hidden{opacity:0; pointer-events:none}
+    .loader-content{text-align:center; padding:32px; max-width:320px}
+    .spinner{
+      width:48px; height:48px; border-radius:50%;
+      border:4px solid rgba(255,255,255,.25); border-top-color:#fff;
+      margin:0 auto 24px; animation:spin 1s linear infinite;
+    }
+    .loader-title{margin:0 0 8px; font-size:20px}
+    .loader-sub{margin:0 0 24px; color:var(--muted)}
+    .watch-btn{
+      width:100%; border:0; border-radius:999px; padding:14px 24px;
+      font-size:16px; font-weight:600; color:#0b0b0b; background:#fff; cursor:pointer;
+      box-shadow:0 12px 30px rgba(0,0,0,.35);
+    }
+    .watch-btn:hover{background:#f4f4f4}
+    .watch-btn:focus-visible{outline:2px solid #fff; outline-offset:3px}
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
     }
 
-    @keyframes bgMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .card {
-      width: 90%;
-      max-width: 400px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      padding: 40px 30px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%);
-      top: -50%;
-      left: -50%;
-      animation: lightMove 6s infinite linear;
-      z-index: 0;
-    }
-
-    @keyframes lightMove {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-    }
-
-    .greeting {
-      font-size: 34px;
-      color: #e76f51;
-      margin-bottom: 14px;
-    }
-
-    .message {
-      font-size: 26px;
-      color: #5a4033;
-      line-height: 1.6;
-      margin-top: 10px;
-      animation: fadeIn 1.2s ease-in-out forwards;
-      opacity: 0;
-    }
-
-    .message.visible {
-      opacity: 1;
-    }
-
-    .signature {
-      margin-top: 25px;
-      color: #c67b5c;
-      font-size: 24px;
-      text-align: right;
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        padding: 28px 20px;
+    @media (max-width: 639px){
+      body{
+        display:block;
+        min-height:100vh;
       }
-      .greeting { font-size: 28px; }
-      .message { font-size: 22px; }
+      .mobile-nav{display:flex}
+      .frame{
+        width:100vw;
+        height:100vh;
+        aspect-ratio:auto;
+        border-radius:0;
+        box-shadow:none;
+        outline:none;
+      }
+      .desk-nav{display:none}
+    }
+
+    @media (min-width: 640px){
+      .desk-nav{position:absolute; inset-inline:0; bottom:14px; padding:0 16px; display:flex; justify-content:space-between; z-index:30}
+      .desk-btn{background:var(--glass); color:#fff; border:0; padding:8px 12px; border-radius:999px; cursor:pointer}
+      .desk-btn:hover{background:rgba(0,0,0,.4)}
+      .mobile-nav{display:none}
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="content">
-      <div class="greeting">Доброе утро, Алина 🌸</div>
-      <div class="message" id="message">Пусть утро будет мягким, день — тёплым, а мысли — светлыми. Пусть каждый момент напоминает, как ты дорога 💖</div>
-      <div class="signature">— Саша</div>
+  <div class="loader-overlay" id="loader" role="alert" aria-live="polite">
+    <div class="loader-content">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2 class="loader-title">Доброе утро, Котя</h2>
+      <p class="loader-sub">Нажми, когда будешь готова.</p>
+      <button class="watch-btn" id="watchBtn">Смотреть</button>
     </div>
   </div>
 
+  <div class="frame" id="app" aria-hidden="true" inert>
+    <div class="layer grad-intro" id="bg"></div>
+    <div class="layer veil"></div>
+    <div class="progress" id="progress"></div>
+    <div class="ctrls">
+      <button class="btn" id="pauseBtn" aria-label="Пауза" title="Пауза">❚❚</button>
+    </div>
+    <button class="navL" id="navL" aria-label="Назад"></button>
+    <button class="navR" id="navR" aria-label="Вперёд"></button>
+    <div class="desk-nav">
+      <button class="desk-btn" id="deskPrev">⟵ Назад</button>
+      <button class="desk-btn" id="deskNext">Вперёд ⟶</button>
+    </div>
+    <div class="mobile-nav">
+      <button class="mobile-btn" id="mobilePrev">Назад</button>
+      <button class="mobile-btn" id="mobileNext">Вперёд</button>
+    </div>
+
+    <div class="content">
+      <div style="margin-top:52px"></div>
+      <div class="kicker">История для Коти</div>
+      <h1 id="title">Вспомним вчерашний день 🛠️🍺</h1>
+      <p class="body" id="text"></p>
+
+      <div class="final" id="final" hidden>
+        <button class="cta" id="ctaBtn">Доброе утро, Котя! ☀️</button>
+        <div class="sub">Сегодня твой день — улыбнись ему первой. ☀️</div>
+      </div>
+    </div>
+
+    <div class="layer noise"></div>
+    <div class="bottom-glow" aria-hidden="true"></div>
+
+    <!-- Music: starts with the story, reduced volume -->
+    <audio id="bgm" src="love.mp3" loop></audio>
+  </div>
+
   <script>
-    const message = document.getElementById('message');
-    window.addEventListener('load', () => {
-      setTimeout(() => message.classList.add('visible'), 600);
+    const slides = [
+      { id:"intro",  title:"Вспомним вчерашний день", emoji:"🛠️🍺", grad:"grad-intro",
+        text:`\nРемонт закрутил тебя, но ты справилась - героиня! \n\nПотом - чуть-чуть пивка, чтобы выдохнуть.` },
+      { id:"movie",  title:"Киносеанс на расстоянии", emoji:"🎬💻", grad:"grad-movie",
+        text:`\nВечером смотрели фильм онлайн - вдвоём, даже через экраны. \n\nБыли небольшие техтрудности, но мы всё равно включили и устроились поудобнее.` },
+      { id:"third",  title:"Третий лишний", emoji:"🙅‍♂️3️⃣", grad:"grad-third",
+        text:`\nКакой-то чудак пытался вклиниться третьим — я офигел. \n\nНо нет: вечер был только наш. Третий — лишний.` },
+      { id:"vibe",   title:"Лучше вместе вживую", emoji:"🎟️🤍", grad:"grad-vibe",
+        text:`\nКино всегда вкуснее офлайн: другой воздух, другие взгляды, общие смешки рядом. \n\nИ всё же — мы и так отлично провели время.` },
+      { id:"today",  title:"Сегодня твой день", emoji:"🌞🫶", grad:"grad-today",
+        text:`\nСегодня рано вставать не нужно, бежать на учёбу - тоже. \n\nПросто живи этот день, как хочешь. Для себя.` },
+      { id:"gm",     title:"Доброе утро, Котенок!", emoji:"☕✨", grad:"grad-gm", isFinal:true,
+        text:`\nПусть утро будет нежным, дыхание — лёгким, кофе - ароматным, \nмысли - светлыми. Сегодня всё получится!` },
+    ];
+
+    const DURATION = 10000;
+    let index = 0; let paused = false; let progress = 0; let lastTs = null; let raf = null; let started = false;
+
+    const app = document.getElementById('app');
+    const loader = document.getElementById('loader');
+    const watchBtn = document.getElementById('watchBtn');
+    const bg = document.getElementById('bg');
+    const progressWrap = document.getElementById('progress');
+    const title = document.getElementById('title');
+    const text = document.getElementById('text');
+    const final = document.getElementById('final');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const deskPrev = document.getElementById('deskPrev');
+    const deskNext = document.getElementById('deskNext');
+    const mobilePrev = document.getElementById('mobilePrev');
+    const mobileNext = document.getElementById('mobileNext');
+
+    const bars = slides.map(()=>{
+      const bar = document.createElement('div'); bar.className='bar';
+      const fill = document.createElement('div'); fill.className='fill';
+      bar.appendChild(fill); progressWrap.appendChild(bar);
+      return fill;
     });
+
+    function render(){
+      const s = slides[index];
+      bg.className = 'layer ' + s.grad;
+      title.textContent = s.title + ' ' + (s.emoji || '');
+      text.textContent = s.text;
+      final.hidden = !s.isFinal;
+      updateNavButtons();
+    }
+
+    function setProgressVisual(){
+      bars.forEach((fill,i)=>{
+        fill.style.width = i < index ? '100%' : i === index ? (progress*100).toFixed(2)+'%' : '0%';
+      });
+    }
+
+    function next(){ index = Math.min(slides.length-1, index+1); progress = 0; lastTs=null; render(); setProgressVisual(); }
+    function prev(){ index = Math.max(0, index-1); progress = 0; lastTs=null; render(); setProgressVisual(); }
+
+    function tick(ts){
+      if(paused){ raf = requestAnimationFrame(tick); return; }
+      if(lastTs==null) lastTs = ts;
+      const dt = ts - lastTs; lastTs = ts;
+      progress = Math.min(1, progress + dt / DURATION);
+      if(progress >= 1){ if(!slides[index].isFinal) next(); progress = 0; }
+      setProgressVisual();
+      raf = requestAnimationFrame(tick);
+    }
+
+    document.getElementById('navL').addEventListener('click', prev);
+    document.getElementById('navR').addEventListener('click', next);
+    if(deskPrev) deskPrev.addEventListener('click', prev);
+    if(deskNext) deskNext.addEventListener('click', next);
+    if(mobilePrev) mobilePrev.addEventListener('click', prev);
+    if(mobileNext) mobileNext.addEventListener('click', next);
+
+    pauseBtn.addEventListener('click', ()=>{
+      paused = !paused; pauseBtn.textContent = paused ? '▶' : '❚❚';
+    });
+
+    function updateNavButtons(){
+      const atStart = index === 0;
+      const atFinal = !!slides[index].isFinal;
+      [deskPrev, mobilePrev].forEach(btn=>{
+        if(!btn) return;
+        btn.disabled = atStart;
+        if(atStart) btn.setAttribute('aria-disabled','true');
+        else btn.removeAttribute('aria-disabled');
+      });
+      [deskNext, mobileNext].forEach(btn=>{
+        if(!btn) return;
+        btn.hidden = atFinal;
+      });
+    }
+
+    const audio = document.getElementById('bgm');
+    audio.volume = 0.05; 
+
+    function startStory(){
+      if(started) return;
+      started = true;
+      loader.classList.add('hidden');
+      app.classList.add('is-live');
+      app.removeAttribute('aria-hidden');
+      app.removeAttribute('inert');
+      render();
+      setProgressVisual();
+      raf = requestAnimationFrame(tick);
+      audio.currentTime = 0;
+      audio.play().catch(()=>{});
+    }
+
+    watchBtn.addEventListener('click', startStory);
   </script>
 </body>
 </html>
