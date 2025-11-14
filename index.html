@@ -177,7 +177,7 @@
     <div class="bottom-glow" aria-hidden="true"></div>
 
     <!-- Music: starts with the story, reduced volume -->
-    <audio id="bgm" src="love.mp3" loop></audio>
+    <audio id="bgm" preload="auto" src="https://cdn.pixabay.com/download/audio/2022/10/19/audio_a3128287b5.mp3?filename=soft-piano-ambient-12464.mp3" loop></audio>
   </div>
 
   <script>
@@ -275,7 +275,11 @@
     }
 
     const audio = document.getElementById('bgm');
-    audio.volume = 0.05; 
+    audio.volume = 0.22; // мягко, но слышно
+    audio.addEventListener('error', ()=>{
+      audio.src = 'Love.mp3';
+      audio.load();
+    }, { once:true });
 
     function startStory(){
       if(started) return;
@@ -288,6 +292,7 @@
       setProgressVisual();
       raf = requestAnimationFrame(tick);
       audio.currentTime = 0;
+      audio.load();
       audio.play().catch(()=>{});
     }
 
