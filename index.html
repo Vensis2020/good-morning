@@ -1,297 +1,695 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Доброе утро, Котя</title>
+  <meta charset="UTF-8" />
+  <title>Доброе утро, Котёнок</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root{
-      --card-w: 420px;
-      --ratio: 9/16;
-      --radius: 28px;
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
-      --glass: rgba(0,0,0,.30);
-      --text: #fff;
-      --muted: rgba(255,255,255,.88);
-      --progress-bg: rgba(255,255,255,.35);
-      --progress-fg: #fff;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;}
-    body{
-      margin:0; display:grid; place-items:center; min-height:100vh;
-      background:#0a0a0a; color:var(--text); font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    }
-    .frame{
-      position:relative; width:min(100%, var(--card-w)); aspect-ratio:var(--ratio);
-      border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);
-      outline:1px solid rgba(255,255,255,.08);
-      opacity:0; pointer-events:none; transform:translateY(10px);
-      transition:opacity .4s ease, transform .4s ease;
-    }
-    .frame.is-live{
-      opacity:1; pointer-events:auto; transform:none;
-    }
-    .layer{position:absolute; inset:0}
-    .veil{background:rgba(0,0,0,.22)}
-    .noise{opacity:.18; pointer-events:none; background-image:radial-gradient(#fff 1px, transparent 1px); background-size:16px 16px}
-
-    .grad-intro{background-image:linear-gradient(135deg,#ec4899,#a21caf,#4f46e5)}
-    .grad-movie{background-image:linear-gradient(135deg,#4f46e5,#0ea5e9,#06b6d4)}
-    .grad-third{background-image:linear-gradient(135deg,#f43f5e,#f59e0b,#fbbf24)}
-    .grad-vibe{background-image:linear-gradient(135deg,#10b981,#14b8a6,#38bdf8)}
-    .grad-today{background-image:linear-gradient(135deg,#7c3aed,#db2777,#ec4899)}
-    .grad-gm{background-image:linear-gradient(135deg,#f59e0b,#facc15,#fb7185)}
-
-    .progress{position:absolute; left:12px; right:12px; top:10px; display:flex; gap:6px; z-index:30}
-    .bar{height:4px; flex:1; background:var(--progress-bg); border-radius:999px; overflow:hidden}
-    .fill{height:100%; width:0%; background:var(--progress-fg)}
-
-    .ctrls{position:absolute; right:10px; top:8px; display:flex; gap:8px; z-index:30}
-    .btn{appearance:none; border:0; border-radius:999px; background:var(--glass); color:#fff; width:36px; height:36px; display:grid; place-items:center; cursor:pointer}
-    .btn:hover{background:rgba(0,0,0,.4)}
-    .navL,.navR{position:absolute; inset-block:0; border:0; background:transparent; cursor:pointer; z-index:20}
-    .navL{left:0; width:33%}
-    .navR{right:0; width:67%}
-
-    .content{position:absolute; inset:0; padding:24px; display:flex; flex-direction:column; z-index:10}
-    .kicker{font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.85}
-    h1{margin:.4rem 0 0; font-size:28px; line-height:1.1; text-shadow:0 1px 0 rgba(0,0,0,.2)}
-    p.body{margin-top:12px; font-size:18px; color:var(--muted); white-space:pre-line; flex:1; overflow:auto}
-    .final{margin-top:auto; padding-bottom:86px}
-    .cta{width:100%; border:0; border-radius:20px; font-weight:700; padding:16px 20px; background:#fff; color:#000; box-shadow:0 12px 30px rgba(0,0,0,.35); cursor:pointer}
-    .sub{margin-top:10px; text-align:center; font-size:14px; opacity:.9}
-
-    .bottom-glow{
-      position:absolute; inset-inline:0; bottom:0; height:160px;
-      background:linear-gradient(180deg, rgba(10,10,10,0), rgba(3,3,3,.88));
-      pointer-events:none; z-index:5;
-    }
-    .mobile-nav{
-      position:absolute; inset-inline:24px; bottom:32px;
-      display:none; gap:12px; z-index:25;
-    }
-    .mobile-btn{
-      flex:1; border:0; border-radius:18px; padding:14px;
-      font-size:15px; font-weight:600; letter-spacing:.05em;
-      background:rgba(0,0,0,.55); color:#fff; text-transform:uppercase;
-      backdrop-filter:blur(12px); box-shadow:0 10px 30px rgba(0,0,0,.4);
-      cursor:pointer;
-    }
-    .mobile-btn:disabled,
-    .desk-btn:disabled{
-      opacity:.45; cursor:not-allowed;
+    :root {
+      --bg1: #f9d4ff;
+      --bg2: #ffe9c8;
+      --accent: #ff8fa3;
+      --accent-dark: #ff6b87;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #34425a;
+      --soft: #fef5ff;
     }
 
-    .loader-overlay{
-      position:fixed; inset:0; background:radial-gradient(circle at top,#1f2937,#0b0b0b);
-      display:grid; place-items:center; transition:opacity .4s ease; z-index:100;
-    }
-    .loader-overlay.hidden{opacity:0; pointer-events:none}
-    .loader-content{text-align:center; padding:32px; max-width:320px}
-    .spinner{
-      width:48px; height:48px; border-radius:50%;
-      border:4px solid rgba(255,255,255,.25); border-top-color:#fff;
-      margin:0 auto 24px; animation:spin 1s linear infinite;
-    }
-    .loader-title{margin:0 0 8px; font-size:20px}
-    .loader-sub{margin:0 0 24px; color:var(--muted)}
-    .watch-btn{
-      width:100%; border:0; border-radius:999px; padding:14px 24px;
-      font-size:16px; font-weight:600; color:#0b0b0b; background:#fff; cursor:pointer;
-      box-shadow:0 12px 30px rgba(0,0,0,.35);
-    }
-    .watch-btn:hover{background:#f4f4f4}
-    .watch-btn:focus-visible{outline:2px solid #fff; outline-offset:3px}
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    @media (max-width: 639px){
-      body{
-        display:block;
-        min-height:100vh;
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+        "Roboto", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(120deg, var(--bg1), var(--bg2));
+      overflow: hidden;
+      color: var(--text-main);
+      animation: bgShift 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgShift {
+      0% {
+        background: linear-gradient(120deg, #f9d4ff, #ffe9c8);
       }
-      .mobile-nav{display:flex}
-      .frame{
-        width:100vw;
-        height:100vh;
-        aspect-ratio:auto;
-        border-radius:0;
-        box-shadow:none;
-        outline:none;
+      50% {
+        background: linear-gradient(120deg, #ffd1e0, #fff3c8);
       }
-      .desk-nav{display:none}
+      100% {
+        background: linear-gradient(120deg, #e4d9ff, #ffd8c8);
+      }
     }
 
-    @media (min-width: 640px){
-      .desk-nav{position:absolute; inset-inline:0; bottom:14px; padding:0 16px; display:flex; justify-content:space-between; z-index:30}
-      .desk-btn{background:var(--glass); color:#fff; border:0; padding:8px 12px; border-radius:999px; cursor:pointer}
-      .desk-btn:hover{background:rgba(0,0,0,.4)}
-      .mobile-nav{display:none}
+    .scene {
+      position: relative;
+      width: min(420px, 96vw);
+      height: min(720px, 100vh - 32px);
+      border-radius: 26px;
+      background: radial-gradient(circle at 50% -40%, #fff7d1 0, transparent 60%),
+                  radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.7), transparent 60%),
+                  radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.6), transparent 55%);
+      box-shadow: 0 14px 40px rgba(20, 36, 70, 0.3);
+      overflow: hidden;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    /* Верхняя панель */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 4px 2px 10px;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mini-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: conic-gradient(from 210deg, #ff9eb5, #ffd26f, #b1c9ff, #ff9eb5);
+      padding: 2px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 12px rgba(255, 143, 163, 0.6);
+    }
+
+    .mini-avatar-inner {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      color: #ff7b9c;
+      font-size: 18px;
+    }
+
+    .top-info-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .top-info-sub {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .top-right {
+      font-size: 18px;
+      opacity: 0.8;
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Небо и солнце */
+    .sky {
+      position: relative;
+      flex: 0 0 160px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(135, 206, 250, 0.9), #fff0d7);
+      box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.5);
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .sun {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 30% 30%, #fffdf5 0, #ffeb99 40%, #ffc45c 100%);
+      border-radius: 50%;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -45px;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+      animation: sunRise 10s ease-out forwards, sunPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes sunRise {
+      0% {
+        bottom: -90px;
+      }
+      100% {
+        bottom: 40px;
+      }
+    }
+
+    @keyframes sunPulse {
+      0%,
+      100% {
+        transform: translateX(-50%) scale(1);
+      }
+      50% {
+        transform: translateX(-50%) scale(1.07);
+      }
+    }
+
+    .cloud {
+      position: absolute;
+      background: #fff;
+      border-radius: 40px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.07);
+      opacity: 0.92;
+    }
+
+    .cloud::before,
+    .cloud::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .cloud.one {
+      width: 120px;
+      height: 34px;
+      top: 28px;
+      left: -140px;
+      animation: cloudMove1 32s linear infinite;
+    }
+
+    .cloud.one::before {
+      width: 46px;
+      height: 46px;
+      top: -24px;
+      left: 8px;
+    }
+
+    .cloud.one::after {
+      width: 54px;
+      height: 54px;
+      top: -30px;
+      right: 6px;
+    }
+
+    .cloud.two {
+      width: 90px;
+      height: 28px;
+      top: 70px;
+      right: -120px;
+      opacity: 0.85;
+      animation: cloudMove2 26s linear infinite;
+    }
+
+    .cloud.two::before {
+      width: 36px;
+      height: 36px;
+      top: -18px;
+      left: 4px;
+    }
+
+    .cloud.two::after {
+      width: 40px;
+      height: 40px;
+      top: -22px;
+      right: 2px;
+    }
+
+    @keyframes cloudMove1 {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(420px);
+      }
+    }
+
+    @keyframes cloudMove2 {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-420px);
+      }
+    }
+
+    .hills {
+      position: absolute;
+      bottom: -18px;
+      left: -40px;
+      right: -40px;
+      height: 90px;
+      background: radial-gradient(circle at 10% 120%, #b1d88c 0, #73b472 35%, #4f8d5d 80%);
+      border-radius: 50%;
+      filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    /* Карточка-письмо */
+    .card {
+      flex: 1;
+      margin-top: 4px;
+      background: var(--card-bg);
+      border-radius: 22px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 12px 28px rgba(120, 80, 155, 0.18);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 0 0, rgba(255, 200, 225, 0.3) 0, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(200, 215, 255, 0.35) 0, transparent 65%);
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card-title-main {
+      font-weight: 700;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-title-main span.emoji {
+      font-size: 20px;
+    }
+
+    .card-title-sub {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .heart-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9bb1, #ffc7d6);
+      color: #5a2435;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(255, 140, 170, 0.6);
+      animation: badgePulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-1px) scale(1.05);
+      }
+    }
+
+    .heart-badge .heart {
+      display: inline-block;
+      animation: heartBeat 1.2s infinite;
+      transform-origin: center;
+    }
+
+    @keyframes heartBeat {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      30% {
+        transform: scale(1.25);
+      }
+    }
+
+    .message-box {
+      margin-top: 8px;
+      background: var(--soft);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px dashed rgba(255, 182, 193, 0.7);
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .message-text {
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      min-height: 130px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 7px;
+      margin-left: 1px;
+      border-radius: 2px;
+      background: rgba(255, 132, 153, 0.9);
+      animation: cursorBlink 0.9s infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%,
+      50% {
+        opacity: 1;
+      }
+      50.1%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .message-footer {
+      margin-top: 10px;
+      font-size: 11px;
+      opacity: 0.7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 143, 163, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #86d17c;
+      box-shadow: 0 0 6px rgba(134, 209, 124, 0.9);
+    }
+
+    /* Нижняя часть: кнопка и цитата */
+    .bottom-actions {
+      position: relative;
+      z-index: 1;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hug-button {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 11px 16px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #ffe3ef 0, #ff8fa3 30%, #ff6a83 80%);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 22px rgba(255, 99, 142, 0.7);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.2s ease;
+    }
+
+    .hug-button:active {
+      transform: translateY(2px) scale(0.97);
+      box-shadow: 0 5px 12px rgba(255, 99, 142, 0.65);
+      filter: brightness(0.98);
+    }
+
+    .hug-button .icon {
+      font-size: 18px;
+      animation: iconFloat 1.3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-2px);
+      }
+    }
+
+    .bottom-note {
+      font-size: 11px;
+      opacity: 0.8;
+      text-align: center;
+    }
+
+    .bottom-note span {
+      font-weight: 600;
+    }
+
+    /* Летающие сердечки */
+    .floating-heart {
+      position: fixed;
+      bottom: -30px;
+      font-size: 22px;
+      pointer-events: none;
+      animation: floatUp 3s ease-out forwards;
+      text-shadow: 0 4px 10px rgba(255, 0, 90, 0.4);
+      z-index: 100;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      60% {
+        transform: translateY(-55vh) translateX(var(--dx)) scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-80vh) translateX(calc(var(--dx) * 1.3)) scale(0.9);
+        opacity: 0;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .scene {
+        height: 100vh;
+        border-radius: 0;
+        padding: 10px;
+        box-shadow: none;
+      }
+      .sky {
+        flex-basis: 130px;
+      }
+      .message-text {
+        min-height: 90px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="loader-overlay" id="loader" role="alert" aria-live="polite">
-    <div class="loader-content">
-      <div class="spinner" aria-hidden="true"></div>
-      <h2 class="loader-title">Доброе утро, Котя</h2>
-      <p class="loader-sub">Нажми, когда будешь готова.</p>
-      <button class="watch-btn" id="watchBtn">Смотреть</button>
-    </div>
-  </div>
-
-  <div class="frame" id="app" aria-hidden="true" inert>
-    <div class="layer grad-intro" id="bg"></div>
-    <div class="layer veil"></div>
-    <div class="progress" id="progress"></div>
-    <div class="ctrls">
-      <button class="btn" id="pauseBtn" aria-label="Пауза" title="Пауза">❚❚</button>
-    </div>
-    <button class="navL" id="navL" aria-label="Назад"></button>
-    <button class="navR" id="navR" aria-label="Вперёд"></button>
-    <div class="desk-nav">
-      <button class="desk-btn" id="deskPrev">⟵ Назад</button>
-      <button class="desk-btn" id="deskNext">Вперёд ⟶</button>
-    </div>
-    <div class="mobile-nav">
-      <button class="mobile-btn" id="mobilePrev">Назад</button>
-      <button class="mobile-btn" id="mobileNext">Вперёд</button>
-    </div>
-
-    <div class="content">
-      <div style="margin-top:52px"></div>
-      <div class="kicker">История для Коти</div>
-      <h1 id="title">Вспомним вчерашний день 🛠️🍺</h1>
-      <p class="body" id="text"></p>
-
-      <div class="final" id="final" hidden>
-        <button class="cta" id="ctaBtn">Доброе утро, Котя! ☀️</button>
-        <div class="sub">Сегодня твой день — улыбнись ему первой. ☀️</div>
+  <div class="scene">
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="mini-avatar">
+          <div class="mini-avatar-inner">A</div>
+        </div>
+        <div>
+          <div class="top-info-title">Твоё утро</div>
+          <div class="top-info-sub">создано с любовью 💌</div>
+        </div>
+      </div>
+      <div class="top-right">
+        <span>☀️</span>
+        <span>✨</span>
       </div>
     </div>
 
-    <div class="layer noise"></div>
-    <div class="bottom-glow" aria-hidden="true"></div>
+    <div class="sky">
+      <div class="sun"></div>
+      <div class="cloud one"></div>
+      <div class="cloud two"></div>
+      <div class="hills"></div>
+    </div>
 
-    <!-- Music: starts with the story, reduced volume -->
-    <audio id="bgm" preload="auto" src="https://s3.twcstorage.ru/2280c8fe-6f84c9e6-c060-48a2-a822-709ccbbe2a60/Love.ol.mp3" loop></audio>
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-title-row">
+          <div>
+            <div class="card-title-main">
+              <span class="emoji">🌸</span>
+              <span>Доброе утро, Котёнок</span>
+            </div>
+            <div class="card-title-sub" id="todayLine"></div>
+          </div>
+          <div class="heart-badge">
+            <span class="heart">❤</span>
+            <span>утренний заряд</span>
+          </div>
+        </div>
+
+        <div class="message-box">
+          <div class="message-text" id="messageText">
+            <span class="cursor" id="cursor"></span>
+          </div>
+          <div class="message-footer">
+            <div class="pill">
+              <span class="pill-dot"></span>
+              <span>я мысленно рядом</span>
+            </div>
+            <div id="timeNow"></div>
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <button class="hug-button" id="hugButton">
+            <span class="icon">🤍</span>
+            <span>Нажми, и я нежно обниму тебя</span>
+          </button>
+          <div class="bottom-note">
+            Когда ты улыбаешься сейчас, <span>у кого-то сильно-сильно тает сердце</span> 💫
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const slides = [
-      { id:"intro",  title:"Вспомним вчерашний день", emoji:"🛠️🍺", grad:"grad-intro",
-        text:`\nРемонт закрутил тебя, но ты справилась - героиня! \n\nПотом - чуть-чуть пивка, чтобы выдохнуть.` },
-      { id:"movie",  title:"Киносеанс на расстоянии", emoji:"🎬💻", grad:"grad-movie",
-        text:`\nВечером смотрели фильм онлайн - вдвоём, даже через экраны. \n\nБыли небольшие техтрудности, но мы всё равно включили и устроились поудобнее.` },
-      { id:"third",  title:"Третий лишний", emoji:"🙅‍♂️3️⃣", grad:"grad-third",
-        text:`\nКакой-то чудак пытался вклиниться третьим — я офигел. \n\nНо нет: вечер был только наш. Третий — лишний.` },
-      { id:"vibe",   title:"Лучше вместе вживую", emoji:"🎟️🤍", grad:"grad-vibe",
-        text:`\nКино всегда вкуснее офлайн: другой воздух, другие взгляды, общие смешки рядом. \n\nИ всё же — мы и так отлично провели время.` },
-      { id:"today",  title:"Сегодня твой день", emoji:"🌞🫶", grad:"grad-today",
-        text:`\nСегодня рано вставать не нужно, бежать на учёбу - тоже. \n\nПросто живи этот день, как хочешь. Для себя.` },
-      { id:"gm",     title:"Доброе утро, Котенок!", emoji:"☕✨", grad:"grad-gm", isFinal:true,
-        text:`\nПусть утро будет нежным, дыхание — лёгким, кофе - ароматным, \nмысли - светлыми. Сегодня всё получится!` },
-    ];
+    // Текст пожелания
+    const message =
+      "Доброе утро, моё солнышко ☀️\n\n" +
+      "Пока мир ещё лениво просыпается, ты уже делаешь его теплее просто тем, что есть.\n\n" +
+      "Пусть сегодня всё будет мягким, как любимый плед, " +
+      "и сладким, как твой идеальный чай.\n\n" +
+      "Улыбнись для меня прямо сейчас — я это не вижу, " +
+      "но чувствую каждой клеточкой. 💕";
 
-    const DURATION = 10000;
-    let index = 0; let paused = false; let progress = 0; let lastTs = null; let raf = null; let started = false;
+    const messageEl = document.getElementById("messageText");
+    const cursorEl = document.getElementById("cursor");
+    const timeEl = document.getElementById("timeNow");
+    const todayLineEl = document.getElementById("todayLine");
+    const hugButton = document.getElementById("hugButton");
 
-    const app = document.getElementById('app');
-    const loader = document.getElementById('loader');
-    const watchBtn = document.getElementById('watchBtn');
-    const bg = document.getElementById('bg');
-    const progressWrap = document.getElementById('progress');
-    const title = document.getElementById('title');
-    const text = document.getElementById('text');
-    const final = document.getElementById('final');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const deskPrev = document.getElementById('deskPrev');
-    const deskNext = document.getElementById('deskNext');
-    const mobilePrev = document.getElementById('mobilePrev');
-    const mobileNext = document.getElementById('mobileNext');
+    // Установка даты и времени
+    function setDateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      timeEl.textContent = `${hours}:${minutes}`;
 
-    const bars = slides.map(()=>{
-      const bar = document.createElement('div'); bar.className='bar';
-      const fill = document.createElement('div'); fill.className='fill';
-      bar.appendChild(fill); progressWrap.appendChild(bar);
-      return fill;
+      const days = [
+        "воскресенье",
+        "понедельник",
+        "вторник",
+        "среда",
+        "четверг",
+        "пятница",
+        "суббота"
+      ];
+      const dayName = days[now.getDay()];
+      todayLineEl.textContent = `Пусть эта ${dayName} будет по-настоящему тёплой для тебя.`;
+    }
+    setDateTime();
+
+    // Эффект печати
+    let index = 0;
+    const speed = 40;
+
+    function typeWriter() {
+      if (index === 0) {
+        messageEl.textContent = "";
+        messageEl.appendChild(cursorEl);
+      }
+
+      if (index < message.length) {
+        const ch = message[index];
+
+        if (ch === "\n") {
+          messageEl.insertBefore(document.createElement("br"), cursorEl);
+        } else {
+          const span = document.createElement("span");
+          span.textContent = ch;
+          messageEl.insertBefore(span, cursorEl);
+        }
+
+        index++;
+        setTimeout(typeWriter, speed);
+      } else {
+        cursorEl.style.display = "none";
+      }
+    }
+
+    // Запуск печати с небольшой задержкой
+    setTimeout(typeWriter, 800);
+
+    // Летающие сердечки при нажатии на кнопку
+    function spawnHeartsBurst() {
+      const count = 16;
+      const centerX = window.innerWidth / 2;
+
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement("div");
+        heart.className = "floating-heart";
+        heart.textContent = Math.random() > 0.4 ? "❤" : "🤍";
+        const offsetX = (Math.random() * 200 - 100).toFixed(0) + "px";
+        heart.style.left = centerX + (Math.random() * 100 - 50) + "px";
+        heart.style.setProperty("--dx", offsetX);
+        heart.style.animationDelay = (Math.random() * 0.7).toFixed(2) + "s";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 3200);
+      }
+    }
+
+    let hugged = false;
+    hugButton.addEventListener("click", () => {
+      spawnHeartsBurst();
+
+      if (!hugged) {
+        hugged = true;
+        hugButton.innerHTML = `
+          <span class="icon">🤗</span>
+          <span>Объятия отправлены. Лови моё тепло 💞</span>
+        `;
+      } else {
+        hugButton.innerHTML = `
+          <span class="icon">🤍</span>
+          <span>Ещё одно объятие — и ещё, и ещё...</span>
+        `;
+      }
     });
-
-    function render(){
-      const s = slides[index];
-      bg.className = 'layer ' + s.grad;
-      title.textContent = s.title + ' ' + (s.emoji || '');
-      text.textContent = s.text;
-      final.hidden = !s.isFinal;
-      updateNavButtons();
-    }
-
-    function setProgressVisual(){
-      bars.forEach((fill,i)=>{
-        fill.style.width = i < index ? '100%' : i === index ? (progress*100).toFixed(2)+'%' : '0%';
-      });
-    }
-
-    function next(){ index = Math.min(slides.length-1, index+1); progress = 0; lastTs=null; render(); setProgressVisual(); }
-    function prev(){ index = Math.max(0, index-1); progress = 0; lastTs=null; render(); setProgressVisual(); }
-
-    function tick(ts){
-      if(paused){ raf = requestAnimationFrame(tick); return; }
-      if(lastTs==null) lastTs = ts;
-      const dt = ts - lastTs; lastTs = ts;
-      progress = Math.min(1, progress + dt / DURATION);
-      if(progress >= 1){ if(!slides[index].isFinal) next(); progress = 0; }
-      setProgressVisual();
-      raf = requestAnimationFrame(tick);
-    }
-
-    document.getElementById('navL').addEventListener('click', prev);
-    document.getElementById('navR').addEventListener('click', next);
-    if(deskPrev) deskPrev.addEventListener('click', prev);
-    if(deskNext) deskNext.addEventListener('click', next);
-    if(mobilePrev) mobilePrev.addEventListener('click', prev);
-    if(mobileNext) mobileNext.addEventListener('click', next);
-
-    pauseBtn.addEventListener('click', ()=>{
-      paused = !paused; pauseBtn.textContent = paused ? '▶' : '❚❚';
-    });
-
-    function updateNavButtons(){
-      const atStart = index === 0;
-      const atFinal = !!slides[index].isFinal;
-      [deskPrev, mobilePrev].forEach(btn=>{
-        if(!btn) return;
-        btn.disabled = atStart;
-        if(atStart) btn.setAttribute('aria-disabled','true');
-        else btn.removeAttribute('aria-disabled');
-      });
-      [deskNext, mobileNext].forEach(btn=>{
-        if(!btn) return;
-        btn.hidden = atFinal;
-      });
-    }
-
-    const audio = document.getElementById('bgm');
-    audio.volume = 0.1; // мягко, но слышно
-
-    function startStory(){
-      if(started) return;
-      started = true;
-      loader.classList.add('hidden');
-      app.classList.add('is-live');
-      app.removeAttribute('aria-hidden');
-      app.removeAttribute('inert');
-      render();
-      setProgressVisual();
-      raf = requestAnimationFrame(tick);
-      audio.currentTime = 0;
-      audio.play().catch(()=>{});
-    }
-
-    watchBtn.addEventListener('click', startStory);
   </script>
 </body>
 </html>
